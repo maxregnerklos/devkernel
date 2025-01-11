@@ -1,6 +1,7 @@
-name: Upstream Kernel
+name: Upstream Kernel with Cherry-Pick
 
 on:
+  workflow_dispatch:  # Allows manual triggering of the workflow
   push:
     branches:
       - main  # Change this to your default branch if it's not 'main'
@@ -23,116 +24,31 @@ jobs:
           git remote add upstream https://github.com/torvalds/linux.git
           git fetch upstream
 
-      - name: Merge upstream kernel version 5
+      - name: Create a new branch for cherry-picking
         run: |
-          git checkout -b upstream-merge
-          git merge upstream/v5.0 --strategy-option theirs || true  # Change this to the specific version you want to merge
+          git checkout -b cherry-pick-branch
 
-      - name: Rebrand Kernel Configurations
+      - name: Cherry-Pick Commits from Specified Repository
         run: |
-          cp .config .config.bak  # Backup original config
-          # Real configuration changes
-          echo "CONFIG_LOCALVERSION=\"-mybrand\"" >> .config  # Set local version
-          echo "CONFIG_DEBUG_KERNEL=n" >> .config  # Disable debug kernel
-          echo "CONFIG_HZ_1000=n" >> .config  # Disable 1000 Hz timer
-          echo "CONFIG_PREEMPT=y" >> .config  # Enable preemption
-          echo "CONFIG_HIGHMEM=y" >> .config  # Enable high memory support
-          echo "CONFIG_SCHED_AUTOGROUP=y" >> .config  # Enable autogroup scheduling
-          echo "CONFIG_FHANDLE=y" >> .config  # Enable file handles
-          echo "CONFIG_PROC_FS=y" >> .config  # Enable proc filesystem
-          echo "CONFIG_SYSFS=y" >> .config  # Enable sysfs
-          echo "CONFIG_VIRTUALIZATION=y" >> .config  # Enable virtualization support
-          echo "CONFIG_X86_64=y" >> .config  # Enable x86_64 architecture support
-          echo "CONFIG_NETFILTER=y" >> .config  # Enable netfilter support
-          echo "CONFIG_IP_NF_IPTABLES=y" >> .config  # Enable iptables support
-          echo "CONFIG_SECURITY=y" >> .config  # Enable security options
-          echo "CONFIG_SECURITY_YAMA=y" >> .config  # Enable Yama security module
-          echo "CONFIG_SECURITY_APPARMOR=y" >> .config  # Enable AppArmor support
-          echo "CONFIG_BLK_DEV_INITRD=y" >> .config  # Enable initial RAM disk support
-          echo "CONFIG_DEVTMPFS=y" >> .config  # Enable device filesystem
-          echo "CONFIG_DEVTMPFS_MOUNT=y" >> .config  # Automatically mount devtmpfs
-          echo "CONFIG_FHANDLE=y" >> .config  # Enable file handle support
-          echo "CONFIG_CGROUPS=y" >> .config  # Enable control groups
-          echo "CONFIG_CGROUP_CPU=y" >> .config  # Enable CPU cgroups
-          echo "CONFIG_CGROUP_MEMORY=y" >> .config  # Enable memory cgroups
-          echo "CONFIG_CGROUP_PIDS=y" >> .config  # Enable PID cgroups
-          echo "CONFIG_CGROUP_FREEZER=y" >> .config  # Enable freezer cgroup
-          echo "CONFIG_CGROUP_DEVICE=y" >> .config  # Enable device cgroup
-          echo "CONFIG_CGROUP_SCHED=y" >> .config  # Enable scheduler cgroup
-          echo "CONFIG_FAT_FS=y" >> .config  # Enable FAT filesystem support
-          echo "CONFIG_EXT4_FS=y" >> .config  # Enable EXT4 filesystem support
-          echo "CONFIG_NTFS_FS=y" >> .config  # Enable NTFS filesystem support
-          echo "CONFIG_JBD2=y" >> .config  # Enable journaling for EXT4
-          echo "CONFIG_XFS_FS=y" >> .config  # Enable XFS filesystem support
-          echo "CONFIG_BTRFS_FS=y" >> .config  # Enable Btrfs filesystem support
-          echo "CONFIG_NFS_FS=y" >> .config  # Enable NFS filesystem support
-          echo "CONFIG_NFSD=y" >> .config  # Enable NFS server support
-          echo "CONFIG_SQUASHFS=y" >> .config  # Enable SquashFS support
-          echo "CONFIG_OVERLAY_FS=y" >> .config  # Enable OverlayFS support
-          echo "CONFIG_TMPFS=y" >> .config  # Enable tmpfs support
-          echo "CONFIG_VIRTIO=y" >> .config  # Enable VirtIO support
-          echo "CONFIG_VIRTIO_NET=y" >> .config  # Enable VirtIO network support
-          echo "CONFIG_VIRTIO_BLK=y" >> .config  # Enable VirtIO block device support
-          echo "CONFIG_VIRTIO_CONSOLE=y" >> .config  # Enable VirtIO console support
-          echo "CONFIG_VIRTIO_BALLOON=y" >> .config  # Enable VirtIO balloon driver
-          echo "CONFIG_VIRTIO_PCI=y" >> .config  # Enable VirtIO PCI support
-          echo "CONFIG_VIRTIO_MMIO=y" >> .config  # Enable VirtIO MMIO support
-          echo "CONFIG_VIRTIO_RING=y" >> .config  # Enable VirtIO ring support
-          echo "CONFIG_VIRTIO_INPUT=y" >> .config  # Enable VirtIO input support
-          echo "CONFIG_VIRTIO_GPU=y" >> .config  # Enable VirtIO GPU support
-          echo "CONFIG_VIRTIO_SCSI=y" >> .config  # Enable VirtIO SCSI support
-          echo "CONFIG_VIRTIO_SERIAL=y" >> .config  # Enable VirtIO serial support
-          echo "CONFIG_VIRTIO_MMIO=y" >> .config  # Enable VirtIO MMIO support
-          echo "CONFIG_VIRTIO_VSOCK=y" >> .config  # Enable VirtIO VSOCK support
-          echo "CONFIG_VIRTIO_NET=y" >> .config  # Enable VirtIO network support
-          echo "CONFIG_VIRTIO_BLK=y" >> .config  # Enable VirtIO block device support
-          echo "CONFIG_VIRTIO_CONSOLE=y" >> .config  # Enable VirtIO console support
-          echo "CONFIG_VIRTIO_BALLOON=y" >> .config  # Enable VirtIO balloon driver
-          echo "CONFIG_VIRTIO_PCI=y" >> .config  # Enable VirtIO PCI support
-          echo "CONFIG_VIRTIO_MMIO=y" >> .config  # Enable VirtIO MMIO support
-          echo "CONFIG_VIRTIO_RING=y" >> .config  # Enable VirtIO ring support
-          echo "CONFIG_VIRTIO_INPUT=y" >> .config  # Enable VirtIO input support
-          echo "CONFIG_VIRTIO_GPU=y" >> .config  # Enable VirtIO GPU support
-                    echo "CONFIG_USB_SUPPORT=y" >> .config  # Enable USB support
-          echo "CONFIG_USB_EHCI_HCD=y" >> .config  # Enable USB 2.0 support
-          echo "CONFIG_USB_XHCI_HCD=y" >> .config  # Enable USB 3.0 support
-          echo "CONFIG_I2C=y" >> .config  # Enable I2C support
-          echo "CONFIG_SPI=y" >> .config  # Enable SPI support
-          echo "CONFIG_GPIO=y" >> .config  # Enable GPIO support
-          echo "CONFIG_SERIAL_8250=y" >> .config  # Enable 8250 serial support
-          echo "CONFIG_SERIAL_8250_CONSOLE=y" >> .config  # Enable console on 8250 serial
-          echo "CONFIG_NETDEVICES=y" >> .config  # Enable network device support
-          echo "CONFIG_INET=y" >> .config  # Enable IPv4 support
-          echo "CONFIG_IP_MULTICAST=y" >> .config  # Enable multicast support
-          echo "CONFIG_NETFILTER_XT_MATCH_IPVS=y" >> .config  # Enable IPVS match support
-          echo "CONFIG_NETFILTER_XT_TARGET_NFQUEUE=y" >> .config  # Enable NFQUEUE target support
-          echo "CONFIG_NETFILTER_XT_TARGET_LOG=y" >> .config  # Enable logging for netfilter
-          echo "CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y" >> .config  # Enable connection tracking match
-          echo "CONFIG_NETFILTER_XT_MATCH_STATE=y" >> .config  # Enable state match
-          echo "CONFIG_NETFILTER_XT_TARGET_MASQUERADE=y" >> .config  # Enable masquerading
-          echo "CONFIG_NETFILTER_XT_TARGET_REDIRECT=y" >> .config  # Enable redirect target
-          echo "CONFIG_NETFILTER_XT_TARGET_NFLOG=y" >> .config  # Enable NFLOG target
-          echo "CONFIG_NETFILTER_XT_TARGET_TCPMSS=y" >> .config  # Enable TCP MSS target
-          echo "CONFIG_NETFILTER_XT_TARGET_TCPMSS=y" >> .config  # Enable TCP MSS target
-          echo "CONFIG_NETFILTER_XT_TARGET_TEE=y" >> .config  # Enable TEE target
-          echo "CONFIG_NETFILTER_XT_TARGET_TPROXY=y" >> .config  # Enable TPROXY target
-          echo "CONFIG_NETFILTER_XT_TARGET_NFQUEUE=y" >> .config  # Enable NFQUEUE target
-          echo "CONFIG_NETFILTER_XT_TARGET_LOG=y" >> .config  # Enable logging for netfilter
-          echo "CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y" >> .config  # Enable connection tracking match
-          echo "CONFIG_NETFILTER_XT_MATCH_STATE=y" >> .config  # Enable state match
-          echo "CONFIG_NETFILTER_XT_TARGET_MASQUERADE=y" >> .config  # Enable masquerading
-          echo "CONFIG_NETFILTER_XT_TARGET_REDIRECT=y" >> .config  # Enable redirect target
-          echo "CONFIG_NETFILTER_XT_TARGET_NFLOG=y" >> .config  # Enable NFLOG target
-          echo "CONFIG_NETFILTER_XT_TARGET_TCPMSS=y" >> .config  # Enable TCP MSS target
-          echo "CONFIG_NETFILTER_XT_TARGET_TEE=y" >> .config  # Enable TEE target
-          echo "CONFIG_NETFILTER_XT_TARGET_TPROXY=y" >> .config  # Enable TPROXY target
-          echo "CONFIG_NETFILTER_XT_TARGET_NFQUEUE=y" >> .config  # Enable NFQUEUE target
-          echo "CONFIG_NETFILTER_XT_TARGET_LOG=y" >> .config  # Enable logging for netfilter
-          echo "CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y" >> .config  # Enable connection tracking match
-          echo "CONFIG_NETFILTER_XT_MATCH_STATE=y" >> .config  # Enable state match
-          echo "CONFIG_NETFILTER_XT_TARGET_MASQUERADE=y" >> .config  # Enable masquerading
-          echo "CONFIG_NETFILTER_XT_TARGET_REDIRECT=y" >> .config  # Enable redirect target
-          echo "CONFIG_NETFILTER_XT_TARGET_NFLOG=y" >> .config  # Enable NFLOG target
-          echo "CONFIG_NETFILTER_XT_TARGET_TCPMSS=y" >> .config  # Enable TCP MSS target
-          echo "CONFIG_NETFILTER_XT_TARGET_TEE=y" >> .config  # Enable TEE target
-          echo "CONFIG_NETFILTER_XT_TARGET_TPROXY=y" >> .config  # Enable TPROXY target
+          # Specify the repository and branch to cherry-pick from
+          REPO="origin"  # Change this to the desired repository (e.g., "origin" or another remote)
+          FEATURE_BRANCH="feature-branch"  # Change this to your actual feature branch name
+          
+          # Fetch the feature branch
+          git fetch $REPO $FEATURE_BRANCH
+          
+          # Cherry-pick specific commits
+          # Replace <commit-hash-1>, <commit-hash-2>, <commit-hash-3> with actual commit hashes
+          for commit in <commit-hash-1> <commit-hash-2> <commit-hash-3>; do
+            echo "Cherry-picking commit $commit..."
+            git cherry-pick $commit || {
+              echo "Cherry-pick failed for commit $commit. Continuing with next commit."
+              git cherry-pick --abort  # Abort the current cherry-pick to continue with the next
+            }
+          done
+
+
+      - name: Push changes
+        run: |
+          git commit -m "Enhanced kernel with custom driver and cherry-picked features" || true
+          git push origin cherry-pick-branch || true
